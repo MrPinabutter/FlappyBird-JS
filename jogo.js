@@ -1,5 +1,8 @@
 console.log("Flappy bird"); // Teste
 
+// Frame do jogo
+    let frames = 0;
+
 // Importação de audios
     const som_HIT = new Audio();
     som_HIT.src = './efeitos/hit.wav';
@@ -23,30 +26,44 @@ console.log("Flappy bird"); // Teste
 
 
 // Elementos do jogo
-    const chao = {
-        srcX:0,
-        srcY:610,
-        largura:224, 
-        altura:112,
-        x:0,
-        y:canvas.height - 112,   // (tamanho do canva - altura da imagem)
-        desenha(){
-            contexto.drawImage(  // Desenha a imagem no canva
-                sprites,         
-                chao.srcX, chao.srcY,
-                chao.largura, chao.altura,
-                chao.x, chao.y,
-                chao.largura, chao.altura,
-            )
+    function newChao(){
+        const chao = {
+            srcX:0,
+            srcY:610,
+            largura:224, 
+            altura:112,
+            x:0,
+            y:canvas.height - 112,   // (tamanho do canva - altura da imagem)
+            atualiza(){
+                const moveChao = 1;
+                const atualizaEm = chao.largura / 2;
+                
+                if(chao.x <= -atualizaEm){
+                    chao.x = 0
+                }
+                
+                chao.x -= moveChao
+            },
+            desenha(){
+                contexto.drawImage(  // Desenha a imagem no canva
+                    sprites,         
+                    chao.srcX, chao.srcY,
+                    chao.largura, chao.altura,
+                    chao.x, chao.y,
+                    chao.largura, chao.altura,
+                );
 
-            contexto.drawImage(
-                sprites,          
-                chao.srcX, chao.srcY,
-                chao.largura, chao.altura,
-                canvas.width - 224, chao.y,
-                chao.largura, chao.altura,
-            )
+                contexto.drawImage(
+                    sprites,          
+                    chao.srcX, chao.srcY,
+                    chao.largura, chao.altura,
+                    chao.x + chao.largura, chao.y,
+                    chao.largura, chao.altura,
+                );
+            }
         }
+
+        return chao;
     }
 
     const background = {
@@ -97,9 +114,9 @@ console.log("Flappy bird"); // Teste
             altura: 24,
             x: 10,
             y: 50,
-            gravidade: 0.3,
+            gravidade: 0.24,
             velocidade: 0,
-            pulo: 8,
+            pulo: 5,
 
             pula(){
                 som_PULO.play();
@@ -107,7 +124,7 @@ console.log("Flappy bird"); // Teste
             },
 
             atualiza() {    // Movimentação do passarinho
-                if(!fazColisaoVertical(flappyBird, chao)){
+                if(!fazColisaoVertical(flappyBird, globais.chao)){
                     flappyBird.velocidade += flappyBird.gravidade 
                     flappyBird.y += flappyBird.velocidade   
                 }else{
@@ -118,11 +135,30 @@ console.log("Flappy bird"); // Teste
                     }, 500)
                 }
             },
+            movimentos: [
+                {srcX: 0, srcY: 0},     // Asa pra cima
+                {srcX: 0, srcY: 26},    // Asa meio
+                {srcX: 0, srcY: 52},     // Asa pra baixo    
+                {srcX: 0, srcY: 26}    // Asa meio
+            ],
+            frameAtual: 0,
+            atualizaFrame(){
+                const intervaloDeFrames = 7;    // Numero primo para todas as 
+                const passouIntervalo = frames % intervaloDeFrames  == 0
 
+                if (passouIntervalo) {
+
+                    flappyBird.frameAtual = frames % 4;
+                }
+
+            },
             desenha(){
+                flappyBird.atualizaFrame();
+                const {srcX, srcY} = flappyBird.movimentos[flappyBird.frameAtual]
+
                 contexto.drawImage(
                     sprites,          // Imagem
-                    flappyBird.srcX, flappyBird.srcY,
+                    srcX, srcY,
                     flappyBird.largura, flappyBird.altura,
                     flappyBird.x, flappyBird.y,
                     flappyBird.largura, flappyBird.altura,
@@ -168,18 +204,19 @@ console.log("Flappy bird"); // Teste
         INICIO: {
             inicializa(){       // Reseta os valores do flappy bird
                 globais.flappyBird = newFlappy();
+                globais.chao = newChao();
             },
             desenha(){
                 background.desenha();
-                chao.desenha();
+                globais.chao.desenha();
                 globais.flappyBird.desenha();
                 mensagemGetReady.desenha();
             },
             click(){
-                mudaTela(Telas.JOGO)
+                mudaTela(Telas.JOGO);
             },
             atualiza(){
-
+                globais.chao.atualiza();
             }
         }
     };
@@ -187,7 +224,7 @@ console.log("Flappy bird"); // Teste
     Telas.JOGO = {
         desenha() {
             background.desenha();
-            chao.desenha();
+            globais.chao.desenha();
             globais.flappyBird.desenha();
         },
         click(){
@@ -195,6 +232,7 @@ console.log("Flappy bird"); // Teste
         },
         atualiza(){
             globais.flappyBird.atualiza();
+            globais.chao.atualiza();
         }
     }
 
@@ -205,6 +243,7 @@ console.log("Flappy bird"); // Teste
         telaAtiva.desenha(),
         telaAtiva.atualiza(),
 
+        frames = frames + 1;
         requestAnimationFrame(loop);
     };
 
