@@ -133,6 +133,7 @@ console.log("Flappy bird"); // Teste
                     flappyBird.y += flappyBird.velocidade   
                 }else{
                     som_HIT.play();
+                    globais.isDead = true
                     setTimeout(() => {
                         mudaTela(Telas.INICIO)
                     }, 500)
@@ -252,6 +253,7 @@ console.log("Flappy bird"); // Teste
                         console.log("Voce Perdeu!");
                         console.log("[pontos]", globais.pontos);
                         som_HIT.play()
+                        globais.isDead = true
                         setTimeout(() => {
                             mudaTela(Telas.INICIO)
                         }, 500);
@@ -261,6 +263,8 @@ console.log("Flappy bird"); // Teste
                     
                     if(par.x + globais.canos.largura == globais.flappyBird.x){    // Somando pontos do usuario
                         globais.pontos += 1;
+                        if(globais.isDead== false)
+                            som_PONTO.play()
                     }
 
                     if(par.x + canos.largura <= 0){     // Apaga os canos que ja sairam da tela
@@ -318,6 +322,7 @@ console.log("Flappy bird"); // Teste
                 globais.chao.desenha();
             },
             click(){
+                globais.isDead = false
                 globais.pontos = 0;
                 mudaTela(Telas.JOGO);
             },
