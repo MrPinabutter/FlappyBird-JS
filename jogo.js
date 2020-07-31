@@ -116,7 +116,7 @@ console.log("Flappy bird"); // Teste
             y: 50,
             gravidade: 0.24,
             velocidade: 0,
-            pulo: 5,
+            pulo: 4,
 
             pula(){
                 som_PULO.play();
@@ -124,7 +124,11 @@ console.log("Flappy bird"); // Teste
             },
 
             atualiza() {    // Movimentação do passarinho
-                if(!fazColisaoVertical(flappyBird, globais.chao)){
+                if(globais.flappyBird.y < 0){
+                    globais.flappyBird.velocidade = 10
+                }
+
+                if(!fazColisaoVertical(flappyBird, globais.chao)){  // Colisão Flappy-Cano
                     flappyBird.velocidade += flappyBird.gravidade 
                     flappyBird.y += flappyBird.velocidade   
                 }else{
@@ -220,12 +224,14 @@ console.log("Flappy bird"); // Teste
                 cabecaFlappyBird = globais.flappyBird.y;
                 peFlappyBird = globais.flappyBird.y + globais.flappyBird.altura;
 
-                if((globais.flappyBird.x >= par.x) && (globais.flappyBird.x <= par.x + canos.largura)){
+                if((globais.flappyBird.x + canos.largura / 2 >= par.x ) && (globais.flappyBird.x <= par.x + canos.largura)){
                     if (cabecaFlappyBird <= par.canoCeu.y) {
                         console.log("Bateu no cano de cima");
+                        globais.flappyBird.velocidade = 10
                         return true;
                     }
                     if (peFlappyBird >= par.canoChao.y) {
+                        globais.flappyBird.velocidade = -10
                         console.log("Bateu no cano de baixo");
                         return true;
                     }
@@ -246,7 +252,9 @@ console.log("Flappy bird"); // Teste
                     if (canos.colisãoComFlappybird(par)) {
                         console.log("Voce Perdeu!");
                         som_HIT.play()
-                        mudaTela(Telas.INICIO)
+                        setTimeout(() => {
+                            mudaTela(Telas.INICIO)
+                        }, 500);
                     }
 
                     par.x -= 2;     // Movimenta os canos
