@@ -114,9 +114,9 @@ console.log("Flappy bird"); // Teste
             altura: 24,
             x: 10,
             y: 50,
-            gravidade: 0.24,
+            gravidade: 0.3,
             velocidade: 0,
-            pulo: 4,
+            pulo: 5,
 
             pula(){
                 som_PULO.play();
@@ -125,7 +125,7 @@ console.log("Flappy bird"); // Teste
 
             atualiza() {    // Movimentação do passarinho
                 if(globais.flappyBird.y < 0){
-                    globais.flappyBird.velocidade = 10
+                    globais.flappyBird.velocidade = 1
                 }
 
                 if(!fazColisaoVertical(flappyBird, globais.chao)){  // Colisão Flappy-Cano
@@ -133,7 +133,6 @@ console.log("Flappy bird"); // Teste
                     flappyBird.y += flappyBird.velocidade   
                 }else{
                     som_HIT.play();
-
                     setTimeout(() => {
                         mudaTela(Telas.INICIO)
                     }, 500)
@@ -142,8 +141,8 @@ console.log("Flappy bird"); // Teste
             movimentos: [
                 {srcX: 0, srcY: 0},     // Asa pra cima
                 {srcX: 0, srcY: 26},    // Asa meio
-                {srcX: 0, srcY: 52},     // Asa pra baixo    
-                {srcX: 0, srcY: 26}    // Asa meio
+                {srcX: 0, srcY: 52},    // Asa pra baixo    
+                {srcX: 0, srcY: 26}     // Asa meio
             ],
             frameAtual: 0,
             atualizaFrame(){
@@ -251,6 +250,7 @@ console.log("Flappy bird"); // Teste
                 canos.pares.forEach((par) =>{
                     if (canos.colisãoComFlappybird(par)) {
                         console.log("Voce Perdeu!");
+                        console.log("[pontos]", globais.pontos);
                         som_HIT.play()
                         setTimeout(() => {
                             mudaTela(Telas.INICIO)
@@ -259,6 +259,10 @@ console.log("Flappy bird"); // Teste
 
                     par.x -= 2;     // Movimenta os canos
                     
+                    if(par.x + globais.canos.largura == globais.flappyBird.x){    // Somando pontos do usuario
+                        globais.pontos += 1;
+                    }
+
                     if(par.x + canos.largura <= 0){     // Apaga os canos que ja sairam da tela
                         canos.pares.shift();
                     }
@@ -289,8 +293,9 @@ console.log("Flappy bird"); // Teste
 
 
 // Telas
-    const globais = {}      // Variaveis globais para o jogo
+    const globais = {};      // Variaveis globais para o jogo
     let telaAtiva = {};
+
     function mudaTela(novaTela){
         telaAtiva = novaTela;
 
@@ -313,6 +318,7 @@ console.log("Flappy bird"); // Teste
                 globais.chao.desenha();
             },
             click(){
+                globais.pontos = 0;
                 mudaTela(Telas.JOGO);
             },
             atualiza(){
@@ -349,7 +355,7 @@ console.log("Flappy bird"); // Teste
         requestAnimationFrame(loop);
     };
 
-    window.addEventListener('click', () => {
+    window.addEventListener('keydown', () => {
         if(telaAtiva.click()){
             telaAtiva.click();
         };
