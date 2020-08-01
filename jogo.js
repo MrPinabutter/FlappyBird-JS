@@ -152,7 +152,7 @@ console.log("Flappy bird"); // Teste
                 const intervaloDeFrames = 7;    // Intervalo de tempo para desacelerar o movimento do flappy bird
                 const passouIntervalo = frames % intervaloDeFrames == 0    // Limitando o intervalo
 
-                if (passouIntervalo && globais.isDead == false) {
+                if ((passouIntervalo && globais.isDead == false) || (passouIntervalo && telaAtiva == Telas.INICIO)) {
                     flappyBird.frameAtual = frames % 4; // O mod de 4 resulta em todos os possiveis do passarinho
                 }
 
