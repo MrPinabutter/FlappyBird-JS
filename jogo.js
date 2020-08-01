@@ -119,9 +119,10 @@ console.log("Flappy bird"); // Teste
             pulo: 5,
 
             pula(){
-                som_PULO.play();
-                if(globais.isDead == false)
+                if(globais.isDead == false){
+                    som_PULO.play();
                     flappyBird.velocidade = -flappyBird.pulo
+                }
             },
 
             atualiza() {    // Movimentação do passarinho
@@ -151,7 +152,7 @@ console.log("Flappy bird"); // Teste
                 const intervaloDeFrames = 7;    // Intervalo de tempo para desacelerar o movimento do flappy bird
                 const passouIntervalo = frames % intervaloDeFrames == 0    // Limitando o intervalo
 
-                if (passouIntervalo) {
+                if (passouIntervalo && globais.isDead == false) {
                     flappyBird.frameAtual = frames % 4; // O mod de 4 resulta em todos os possiveis do passarinho
                 }
 
