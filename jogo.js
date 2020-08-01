@@ -120,7 +120,8 @@ console.log("Flappy bird"); // Teste
 
             pula(){
                 som_PULO.play();
-                flappyBird.velocidade = -flappyBird.pulo
+                if(globais.isDead == false)
+                    flappyBird.velocidade = -flappyBird.pulo
             },
 
             atualiza() {    // Movimentação do passarinho
